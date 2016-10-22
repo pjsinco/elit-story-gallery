@@ -12,7 +12,7 @@ License: GPL2
 
 // if this file is called directly, abort
 if (!defined('WPINC')) {
-    die;
+  die;
 }
 
 
@@ -21,6 +21,23 @@ function elit_story_gallery_shortcodes_init( ) {
   if ( !shortcode_exists( 'story-gallery' ) ) {
 
     function elit_story_gallery_shortcodes( $atts, $content = null ) {
+
+      wp_register_script(
+        'elit-story-gallery-vendor-bundle',
+        plugins_url( 'public/scripts/elit-story-gallery.min.js', __FILE__ ),
+        array( 'jquery' ),
+        filemtime( plugin_dir_path(__FILE__) . '/public/scripts/elit-story-gallery.min.js' ), 
+        true
+      );
+
+      wp_enqueue_script(
+        'elit-story-gallery-main',
+        plugins_url( '/public/scripts/main.js', __FILE__ ),
+        array( 'elit-story-gallery-vendor-bundle' ),
+        filemtime( plugin_dir_path(__FILE__) . '/public/scripts/main.js' ), 
+        true
+      );
+
 
       $atts = array_change_key_case( (array)$atts, CASE_LOWER );
       $shortcode_atts = shortcode_atts(
@@ -103,5 +120,3 @@ function elit_story_gallery_shortcodes_init( ) {
   }
 }
 add_action('init' , 'elit_story_gallery_shortcodes_init');
-
-
