@@ -1,11 +1,13 @@
 var files = {
 
-  vendor: [
-    'vendor/imagesloaded.pkgd.min.js',
-    'vendor/google-image-layout-modified.js',
-    'vendor/photoswipe-ui-default.min.js',
-    'vendor/photoswipe.js',
-  ]
+  vendor: {
+    scripts: [
+      'vendor/scripts/imagesloaded.pkgd.min.js',
+      'vendor/scripts/google-image-layout-modified.js',
+      'vendor/scripts/photoswipe-ui-default.min.js',
+      'vendor/scripts/photoswipe.js',
+    ],
+  },
 };
 
 module.exports = function(grunt) {
@@ -14,19 +16,28 @@ module.exports = function(grunt) {
   grunt.initConfig({
 
     pkg: grunt.file.readJSON('package.json'),
-
-    concat: {
+  
+    sass: {
       options: {
-        //stripBanners: true,
+        sourceMap: true,
       },
-      dist: {
-        src: files.vendor,
-        //src: ['vendor/**/*.js'],
-        dest: './public/scripts/<%= pkg.name %>.js',
-        //dest: 'public/scripts/elit-story-gallery-bundle.js',
+      dev: {
+        files: {
+          'public/styles/<%= pkg.name %>.css': 'sass/style.scss',
+        },
       },
     },
 
+    concat: {
+      options: {
+          //stripBanners: true,
+      },
+      all: {
+        src: files.vendor.scripts,
+        dest: './public/scripts/<%= pkg.name %>.js',
+      },
+    },
+  
     uglify: {
       options: {
         banner: '/* <%= pkg.name %> - v<%= pkg.version %> */'
@@ -38,10 +49,32 @@ module.exports = function(grunt) {
       }
     },
 
+    notify: {
+      sass: {
+        options: {
+          title: 'Sass',
+          message: 'Sassed!',
+        },
+      },
+    },
+
+    watch: {
+      sass: {
+        files: ['sass/**/*.scss'],
+        tasks: ['sass:dev', 'notify:sass'],
+      },
+    },
+
   });
 
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-sass');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-notify');
 
-  grunt.registerTask('default', ['concat', 'uglify']);
+  grunt.registerTask('scripts-dev', ['concat']);
+  grunt.registerTask('scripts-dist', ['concat', 'uglify']);
+  grunt.registerTask('compile-sass', ['sass:dev', 'notify:sass']);
+  grunt.registerTask('default', ['watch']);
 };
