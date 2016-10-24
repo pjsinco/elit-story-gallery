@@ -129,7 +129,8 @@ EOF;
         //plugins_url( 'public/scripts/elit-story-gallery.min.js', __FILE__ ),
         plugins_url( 'public/scripts/elit-story-gallery.js', __FILE__ ),
         array( 'jquery' ),
-        filemtime( plugin_dir_path(__FILE__) . '/public/scripts/elit-story-gallery.min.js' ), 
+        //filemtime( plugin_dir_path(__FILE__) . '/public/scripts/elit-story-gallery.min.js' ), 
+        filemtime( plugin_dir_path(__FILE__) . '/public/scripts/elit-story-gallery.js' ), 
         true
       );
 
@@ -157,7 +158,8 @@ EOF;
 
       $html  = '<figure>';
       $html .= "<a href=\"$full_url\">"; // 
-      $html .= "<img src=\"$small_url\" data-width=\"$width\" data-height=\"$height\" class=\"gallery__img\" alt=\"\">";
+      //$html .= "<img src=\"$small_url\" data-width=\"$width\" data-height=\"$height\" class=\"gallery__img\" alt=\"\">";
+      $html .= "<img src=\"$small_url\" class=\"gallery__img\" alt=\"\">";
       $html .= "</a>";
       $html .= "</figure>";
       

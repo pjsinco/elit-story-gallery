@@ -56,9 +56,19 @@ module.exports = function(grunt) {
           message: 'Sassed!',
         },
       },
+      scripts: {
+        options: {
+          title: 'Scripts',
+          message: 'Processed!',
+        }
+      }
     },
 
     watch: {
+      scripts: {
+        files: ['vendor/scripts/**/*.js'],
+        tasks: ['concat', 'notify:scripts'],
+      },
       sass: {
         files: ['sass/**/*.scss'],
         tasks: ['sass:dev', 'notify:sass'],

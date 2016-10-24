@@ -126,10 +126,10 @@
 
   var imgLoad = imagesLoaded(document.querySelector('.google-image-layout'));
 
-//  imgLoad.on('progress', function(instance, image) {
-//    image.img.setAttribute('data-width', image.img.offsetWidth);
-//    image.img.setAttribute('data-height', image.img.offsetHeight);
-//  });
+  imgLoad.on('progress', function(instance, image) {
+    image.img.setAttribute('data-width', image.img.offsetWidth);
+    image.img.setAttribute('data-height', image.img.offsetHeight);
+  });
 
   imgLoad.on('done', function(instance) {
     GoogleImageLayout.init({

@@ -618,8 +618,12 @@ a.pswp__share--download:hover {
   background: none; }
 
 .gallery {
-  max-width: 1000px;
-  margin: 0 auto; }
+  /*max-width: 1000px;*/
+  /*margin: 0 auto;*/ }
+  .gallery:after {
+    content: "";
+    display: table;
+    clear: both; }
   .gallery__img {
     position: relative;
     z-index: 1;
