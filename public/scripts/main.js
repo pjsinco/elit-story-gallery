@@ -62,11 +62,9 @@
 
           var item = {
             src: href,
-            //w: 992,
-            //h: 661
             w: $(this).data('width'),
             h: $(this).data('height'),
-            title: 'hiya'
+            title: $(this).data('caption'),
           };
 
           items.push(item);

@@ -628,13 +628,11 @@ a.pswp__share--download:hover {
     display: table;
     clear: both; }
   .gallery__sizer, .gallery__item {
-    /*width: 33.333%;*/
     width: 33.2%; }
   .gallery__item {
     float: left; }
     .gallery__item img {
       display: block;
-      /*max-width: 100%;*/
       width: 100.5%;
       filter: brightness(100%);
       transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);

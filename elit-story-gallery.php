@@ -52,14 +52,17 @@ function elit_story_gallery_shortcodes_init( ) {
         $thumb = 
           wp_get_attachment_image_src( $image_id, array( $thumb_max_width ) );
         $full_size = wp_get_attachment_image_src( $image_id, 'elit-super' );
+        $content = get_post( $image_id );
 
-        if ( !$thumb || !$full_size ) {
-          break;
+        if ( !$content || !$thumb || !$full_size ) {
+          continue;
         }
-
     
         $srcset = wp_get_attachment_image_srcset( $image_id, array($thumb_max_width) ); 
-        $html = elit_figure_markup( $thumb, $full_size );
+        $html = elit_figure_markup( $thumb, 
+                                    $full_size, 
+                                    $srcset, 
+                                    $content->post_excerpt );
 
         $markup .= $html;
       }
@@ -111,7 +114,7 @@ function elit_story_gallery_shortcodes_init( ) {
      * @param string $full_url  URL for the full-size image
      * @return string Markup for the figure
      */
-    function elit_figure_markup( $thumb, $full_size, $srcset ) {
+    function elit_figure_markup( $thumb, $full_size, $srcset, $caption ) {
 
       $thumb_url = $thumb[0];
       $thumb_width = $thumb[1];
@@ -128,7 +131,8 @@ function elit_story_gallery_shortcodes_init( ) {
       $html  = '<figure class="gallery__item">';
       $html .= '<a href="' . esc_url( $full_size_url ) . '"'; 
       $html .= ' data-width="' . $full_size_width .'"';
-      $html .= ' data-height="' . $full_size_height . '">';
+      $html .= ' data-height="' . $full_size_height . '"';
+      $html .= ' data-caption="' . esc_attr( $caption ) . '">';
       $html .= '<img alt="" data-width="' . $thumb_width . '" ';
       $html .= 'data-height="' . $thumb_height . '" src="' . esc_url( $thumb_url ) . '" ';
       $html .= 'srcset="' . esc_attr( $srcset ) . '" />';

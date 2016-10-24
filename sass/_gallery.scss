@@ -5,7 +5,8 @@
 
   &__sizer,
   &__item {
-    /*width: 33.333%;*/
+    // < 33.3333% for seamlessness;
+    // see http://metafizzy.co/blog/beyonce-seamless-fluid-image-masonry/
     width: 33.2%;
   }
 
@@ -14,8 +15,11 @@
 
     & img {
       display: block;
-      /*max-width: 100%;*/
-      width: 100.5%;
+
+      // > 100% for seamlessness;
+      // see http://metafizzy.co/blog/beyonce-seamless-fluid-image-masonry/
+      width: 100.5%; 
+
       filter: brightness(100%);
       transition: all .5s cubic-bezier(.23,1,.32,1);
       will-change: opacity,transform;
