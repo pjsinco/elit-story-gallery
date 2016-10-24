@@ -41,24 +41,25 @@ function elit_story_gallery_shortcodes_init( ) {
       // Masonry wants a blank first item
       $markup .= '<figure class="gallery__sizer"></figure>'; 
 
-      foreach ( explode( ',', $shortcode_atts['ids'] ) as $thumb_id ) {
+      $largest_image_name = elit_get_largest_image_name();
+
+      foreach ( explode( ',', $shortcode_atts['ids'] ) as $image_id ) {
 
         //$max_width = $shortcode_atts['max-height'] / 2 * 3;
         $thumb_max_width = $shortcode_atts['thumb-max-width'];
         $full_max_width = $shortcode_atts['thumb-max-width'];
 
-        $small = 
-          wp_get_attachment_image_src( $thumb_id, array( $thumb_max_width ) );
-//echo '<pre>'; var_dump($small); echo '</pre>'; die();
-//echo '<pre>'; var_dump(get_intermediate_image_sizes()); echo '</pre>'; die();
-//echo '<pre>'; var_dump(  wp_get_attachment_url( $thumb_id ) ); echo '</pre>'; die();
-//echo '<pre>'; var_dump(  wp_get_attachment_image_src( $thumb_id, array(992)) ); echo '</pre>'; die();
-        $full = wp_get_attachment_image_src( $thumb_id, array( $$full_max_width ) );
-        $small_url = $small[0];
-        $full_url = wp_get_attachment_url( $thumb_id ); 
-    
+        $thumb = 
+          wp_get_attachment_image_src( $image_id, array( $thumb_max_width ) );
+        $full_size = wp_get_attachment_image_src( $image_id, 'elit-super' );
 
-        $html = elit_figure_markup( $small_url, $full_url );
+        if ( !$thumb || !$full_size ) {
+          break;
+        }
+
+    
+        $srcset = wp_get_attachment_image_srcset( $image_id, array($thumb_max_width) ); 
+        $html = elit_figure_markup( $thumb, $full_size );
 
         $markup .= $html;
       }
@@ -69,6 +70,95 @@ function elit_story_gallery_shortcodes_init( ) {
     }
 
     add_shortcode( 'story-gallery', 'elit_story_gallery_shortcodes' );
+
+
+    /**
+     * Enqueue scripts and stylesheets
+     *
+     */
+    function elit_enqueue() {
+
+      wp_enqueue_style(
+        'elit-story-gallery-styles',
+        plugins_url( 'public/styles/elit-story-gallery.css', __FILE__ ),
+        array(),
+        filemtime( plugin_dir_path(__FILE__) . '/public/styles/elit-story-gallery.css' )
+      );
+
+      wp_register_script(
+        'elit-story-gallery-vendor-bundle',
+        //plugins_url( 'public/scripts/elit-story-gallery.min.js', __FILE__ ),
+        plugins_url( 'public/scripts/elit-story-gallery.js', __FILE__ ),
+        array( 'jquery', 'jquery-masonry' ),
+        //filemtime( plugin_dir_path(__FILE__) . '/public/scripts/elit-story-gallery.min.js' ), 
+        filemtime( plugin_dir_path(__FILE__) . '/public/scripts/elit-story-gallery.js' ), 
+        true
+      );
+
+      wp_enqueue_script(
+        'elit-story-gallery-main',
+        plugins_url( '/public/scripts/main.js', __FILE__ ),
+        array( 'elit-story-gallery-vendor-bundle' ),
+        filemtime( plugin_dir_path(__FILE__) . '/public/scripts/main.js' ), 
+        true
+      );
+    }
+
+    /**
+     * Generate HTML for each figure
+     *
+     * @param string $thumb_url URL for the thumb image to display
+     * @param string $full_url  URL for the full-size image
+     * @return string Markup for the figure
+     */
+    function elit_figure_markup( $thumb, $full_size, $srcset ) {
+
+      $thumb_url = $thumb[0];
+      $thumb_width = $thumb[1];
+      $thumb_height = $thumb[2];
+
+      $full_size_url = $full_size[0];
+      $full_size_width = $full_size[1];
+      $full_size_height = $full_size[2];
+
+      //$dimensions = elit_parse_dimensions( basename( $thumb_url ) );
+      //$width = $dimensions['width'];
+      //$height = $dimensions['height'];
+
+      $html  = '<figure class="gallery__item">';
+      $html .= '<a href="' . esc_url( $full_size_url ) . '"'; 
+      $html .= ' data-width="' . $full_size_width .'"';
+      $html .= ' data-height="' . $full_size_height . '">';
+      $html .= '<img alt="" data-width="' . $thumb_width . '" ';
+      $html .= 'data-height="' . $thumb_height . '" src="' . esc_url( $thumb_url ) . '" ';
+      $html .= 'srcset="' . esc_attr( $srcset ) . '" />';
+      $html .= "</a>";
+      $html .= "</figure>";
+      
+      return $html;
+    }
+
+    /**
+     * Parse the width and height from a WordPress size-suffixed image filename, 
+     * e.g. murthy-480x318.jpg 
+     *
+     * @param string $filename The filename to parse
+     * @return false | Associative array with values for width, height
+     */
+    function elit_parse_dimensions( $filename ) {
+//echo '<pre>'; var_dump($filename); echo '</pre>'; die();
+      $re = '/\d{3}x\d{3}/';
+
+      $match = preg_match( $re, $filename, $matches );
+
+      if ( $match ) {
+        $vals = explode( 'x', $matches[0] );
+        $keys = array( 'width', 'height' );
+        return array_combine( $keys, $vals );
+      }
+
+      return false;
+    }
 
     function elit_add_pswp_element( $content ) {
 
@@ -120,81 +210,118 @@ EOF;
     }
 
     /**
-     * Enqueue scripts and stylesheets
+     * Get size information for all currently-registered image sizes.
      *
+     * source: https://codex.wordpress.org/Function_Reference/get_intermediate_image_sizes
+     * @global $_wp_additional_image_sizes
+     * @uses   get_intermediate_image_sizes()
+     * @return array $sizes Data for all currently-registered image sizes.
      */
-    function elit_enqueue() {
-
-      wp_enqueue_style(
-        'elit-story-gallery-styles',
-        plugins_url( 'public/styles/elit-story-gallery.css', __FILE__ ),
-        array(),
-        filemtime( plugin_dir_path(__FILE__) . '/public/styles/elit-story-gallery.css' )
-      );
-
-      wp_register_script(
-        'elit-story-gallery-vendor-bundle',
-        //plugins_url( 'public/scripts/elit-story-gallery.min.js', __FILE__ ),
-        plugins_url( 'public/scripts/elit-story-gallery.js', __FILE__ ),
-        array( 'jquery', 'jquery-masonry' ),
-        //filemtime( plugin_dir_path(__FILE__) . '/public/scripts/elit-story-gallery.min.js' ), 
-        filemtime( plugin_dir_path(__FILE__) . '/public/scripts/elit-story-gallery.js' ), 
-        true
-      );
-
-      wp_enqueue_script(
-        'elit-story-gallery-main',
-        plugins_url( '/public/scripts/main.js', __FILE__ ),
-        array( 'elit-story-gallery-vendor-bundle' ),
-        filemtime( plugin_dir_path(__FILE__) . '/public/scripts/main.js' ), 
-        true
-      );
+    function elit_get_image_sizes() {
+    	global $_wp_additional_image_sizes;
+    
+    	$sizes = array();
+    
+    	foreach ( get_intermediate_image_sizes() as $_size ) {
+    		if ( in_array( $_size, array('thumbnail', 'medium', 'medium_large', 'large') ) ) {
+    			$sizes[ $_size ]['width']  = get_option( "{$_size}_size_w" );
+    			$sizes[ $_size ]['height'] = get_option( "{$_size}_size_h" );
+    			$sizes[ $_size ]['crop']   = (bool) get_option( "{$_size}_crop" );
+    		} elseif ( isset( $_wp_additional_image_sizes[ $_size ] ) ) {
+    			$sizes[ $_size ] = array(
+    				'width'  => $_wp_additional_image_sizes[ $_size ]['width'],
+    				'height' => $_wp_additional_image_sizes[ $_size ]['height'],
+    				'crop'   => $_wp_additional_image_sizes[ $_size ]['crop'],
+    			);
+    		}
+    	}
+    
+    	return $sizes;
     }
 
     /**
-     * Generate HTML for each figure
+     * Get size information for a specific image size.
      *
-     * @param string $small_url URL for the small image to display
-     * @param string $full_url  URL for the full-size image
-     * @return string Markup for the figure
+     * @uses   elit_get_image_sizes()
+     * @param  string $size The image size for which to retrieve data.
+     * @return bool|array $size Size data about an image size or false if the size doesn't exist.
      */
-    function elit_figure_markup( $small_url, $full_url ) {
+    function get_image_size( $size ) {
+    	$sizes = elit_get_image_sizes();
+    
+    	if ( isset( $sizes[ $size ] ) ) {
+    		return $sizes[ $size ];
+    	}
+    
+    	return false;
+    }
+    
+    /**
+     * Get the width of a specific image size.
+     *
+     * @uses   get_image_size()
+     * @param  string $size The image size for which to retrieve data.
+     * @return bool|string $size Width of an image size or false if the size doesn't exist.
+     */
+    function get_image_width( $size ) {
+    	if ( ! $size = get_image_size( $size ) ) {
+    		return false;
+    	}
+    
+    	if ( isset( $size['width'] ) ) {
+    		return $size['width'];
+    	}
+    
+    	return false;
+    }
+    
+    /**
+     * Get the height of a specific image size.
+     *
+     * @uses   get_image_size()
+     * @param  string $size The image size for which to retrieve data.
+     * @return bool|string $size Height of an image size or false if the size doesn't exist.
+     */
+    function get_image_height( $size ) {
+    	if ( ! $size = get_image_size( $size ) ) {
+    		return false;
+    	}
+    
+    	if ( isset( $size['height'] ) ) {
+    		return $size['height'];
+    	}
+    
+    	return false;
+    }
 
-      $dimensions = elit_parse_dimensions( basename( $small_url ) );
-      $width = $dimensions['width'];
-      $height = $dimensions['height'];
+    /**
+     * Get the name of the largest image size available.
+     * @uses elit_get_image_sizes()
+     * @return string The name of the largest image size
+     */
+    function elit_get_largest_image_name() {
 
-      $html  = '<figure class="gallery__item">';
-      $html .= "<a href=\"$full_url\">"; // 
-      $html .= "<img src=\"$small_url\" data-width=\"$width\" data-height=\"$height\" class=\"\" alt=\"\">";
-      //$html .= "<img src=\"$small_url\" class=\"gallery__img\" alt=\"\">";
-      $html .= "</a>";
-      $html .= "</figure>";
+      $image_sizes = elit_get_image_sizes();
+      $keys = array_keys($image_sizes);
+      $widest = 0;
+      $widest_name = null;
+
+      for ($i = 0; $i < count($keys); $i++) {
+//echo '<pre>'; var_dump($keys[$i], ($image_sizes[$keys[$i]]['width']), $widest_name, $widest, $image_sizes[$keys[$i]]['width'] > $widest ); echo '</pre>'; 
+        if ($image_sizes[$keys[$i]]['width'] > $widest) {
       
-      return $html;
-    }
-
-    /**
-     * Parse the width and height from a WordPress size-suffixed image filename, 
-     * e.g. murthy-480x318.jpg 
-     *
-     * @param string $filename The filename to parse
-     * @return false | Associative array with values for width, height
-     */
-    function elit_parse_dimensions( $filename ) {
-
-      $re = '/\d{3}x\d{3}/';
-
-      $match = preg_match( $re, $filename, $matches );
-
-      if ( $match ) {
-        $vals = explode( 'x', $matches[0] );
-        $keys = array( 'width', 'height' );
-        return array_combine( $keys, $vals );
+          $widest = $image_sizes[$keys[$i]]['width'];
+          $widest_name = $keys[$i];
+        }
       }
 
-      return false;
+      return $widest_name;
     }
+
+
+
+
+
   }
 }
 add_filter( 'the_content', 'elit_add_pswp_element', 10, 1 );
