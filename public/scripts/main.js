@@ -1,7 +1,7 @@
 (function($) {
 
   /**
-   * Transitions
+   * Photoswipe Transitions
    *
    */
 
@@ -25,6 +25,7 @@
       $('body').off('mousemove.detect');
     });
 
+
   function debounce(f, wait, immediate) {
     var timeout;
     return function() {
@@ -45,10 +46,10 @@
     };
   }
 
-
   function initGallery() {
     var $pswp = $('.pswp')[0];
     var image = [];
+
 
     $('.gallery').each(function() {
 
@@ -77,15 +78,16 @@
 
       $gallery.on('click', 'figure', function(evt) {
         evt.preventDefault();
-        
-        var $index = $(this).index();
+
+        var $index = $(this).index() - 1; 
+        // -1 to account for empty .gallery__sizer
+
         var options = {
           index: $index,
           bgOpacity: 0.9,
           showHideOpacity: true,
         };
   
-
         var gallery = new PhotoSwipe($pswp, PhotoSwipeUI_Default, items, options );
 
         // Triggers only on mouseUsed
@@ -124,21 +126,19 @@
     });
   }
 
-  var imgLoad = imagesLoaded(document.querySelector('.google-image-layout'));
 
-  imgLoad.on('progress', function(instance, image) {
-    image.img.setAttribute('data-width', image.img.offsetWidth);
-    image.img.setAttribute('data-height', image.img.offsetHeight);
-  });
+  var $gallery = $('.gallery').imagesLoaded(function() {
 
-  imgLoad.on('done', function(instance) {
-    GoogleImageLayout.init({
-      after: initGallery
+    $gallery.masonry({
+      itemSelector: '.gallery__item',
+      columnWidth: '.gallery__sizer',
+      percentPosition: true,
     });
+
+    initGallery();
+    
   });
 
-  window.onresize = debounce(function() {
-    GoogleImageLayout.init();
-  }, 25);
 
 })(jQuery);
+

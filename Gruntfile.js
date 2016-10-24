@@ -2,8 +2,8 @@ var files = {
 
   vendor: {
     scripts: [
-      'vendor/scripts/imagesloaded.pkgd.min.js',
-      'vendor/scripts/google-image-layout-modified.js',
+      //'vendor/scripts/imagesloaded.pkgd.min.js',
+      //'vendor/scripts/google-image-layout-modified.js',
       'vendor/scripts/photoswipe-ui-default.min.js',
       'vendor/scripts/photoswipe.js',
     ],
@@ -44,7 +44,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          './public/scripts/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+          './public/scripts/<%= pkg.name %>.min.js': ['<%= concat.all.dest %>']
         }
       }
     },

@@ -31,24 +31,32 @@ function elit_story_gallery_shortcodes_init( ) {
       $shortcode_atts = shortcode_atts(
         array(
           'ids' => '',
-          'max-height' => 200
+          'thumb-max-width' => 331,
+          'full-max-width' => 992,
         ),
         $atts
       );
 
-      $markup  = '<div class="gallery google-image-layout" ';
-      $markup .= 'data-google-image-layout data-max-height="' . $shortcode_atts['max-height'] . '">';
+      $markup = '<div class="gallery">';
+      // Masonry wants a blank first item
+      $markup .= '<figure class="gallery__sizer"></figure>'; 
 
       foreach ( explode( ',', $shortcode_atts['ids'] ) as $thumb_id ) {
 
         //$max_width = $shortcode_atts['max-height'] / 2 * 3;
-        $max_height = $shortcode_atts['max-height'];
+        $thumb_max_width = $shortcode_atts['thumb-max-width'];
+        $full_max_width = $shortcode_atts['thumb-max-width'];
 
         $small = 
-          wp_get_attachment_image_src( $thumb_id, array( 0, $max_height ) );
-
+          wp_get_attachment_image_src( $thumb_id, array( $thumb_max_width ) );
+//echo '<pre>'; var_dump($small); echo '</pre>'; die();
+//echo '<pre>'; var_dump(get_intermediate_image_sizes()); echo '</pre>'; die();
+//echo '<pre>'; var_dump(  wp_get_attachment_url( $thumb_id ) ); echo '</pre>'; die();
+//echo '<pre>'; var_dump(  wp_get_attachment_image_src( $thumb_id, array(992)) ); echo '</pre>'; die();
+        $full = wp_get_attachment_image_src( $thumb_id, array( $$full_max_width ) );
         $small_url = $small[0];
         $full_url = wp_get_attachment_url( $thumb_id ); 
+    
 
         $html = elit_figure_markup( $small_url, $full_url );
 
@@ -128,7 +136,7 @@ EOF;
         'elit-story-gallery-vendor-bundle',
         //plugins_url( 'public/scripts/elit-story-gallery.min.js', __FILE__ ),
         plugins_url( 'public/scripts/elit-story-gallery.js', __FILE__ ),
-        array( 'jquery' ),
+        array( 'jquery', 'jquery-masonry' ),
         //filemtime( plugin_dir_path(__FILE__) . '/public/scripts/elit-story-gallery.min.js' ), 
         filemtime( plugin_dir_path(__FILE__) . '/public/scripts/elit-story-gallery.js' ), 
         true
@@ -156,10 +164,10 @@ EOF;
       $width = $dimensions['width'];
       $height = $dimensions['height'];
 
-      $html  = '<figure>';
+      $html  = '<figure class="gallery__item">';
       $html .= "<a href=\"$full_url\">"; // 
-      //$html .= "<img src=\"$small_url\" data-width=\"$width\" data-height=\"$height\" class=\"gallery__img\" alt=\"\">";
-      $html .= "<img src=\"$small_url\" class=\"gallery__img\" alt=\"\">";
+      $html .= "<img src=\"$small_url\" data-width=\"$width\" data-height=\"$height\" class=\"\" alt=\"\">";
+      //$html .= "<img src=\"$small_url\" class=\"gallery__img\" alt=\"\">";
       $html .= "</a>";
       $html .= "</figure>";
       

@@ -34,6 +34,11 @@
 	img {
 		max-width: none;
 	}
+
+  &__container_transition {
+    -webkit-transition: -webkit-transform 333ms cubic-bezier(.4,0,.22,1);
+    transition: transform 333ms cubic-bezier(.4,0,.22,1);
+  }
 }
 
 /* style is added when JS option showHideOpacity is set to true */
