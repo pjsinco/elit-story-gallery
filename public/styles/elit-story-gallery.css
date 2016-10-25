@@ -621,7 +621,7 @@ a.pswp__share--download:hover {
   background: none; }
 
 .gallery {
-  max-width: 992px;
+  /*max-width: 992px;*/
   /*margin: 0 auto;*/ }
   .gallery:after {
     content: "";
