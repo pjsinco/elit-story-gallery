@@ -31,11 +31,14 @@ function elit_story_gallery_shortcodes_init( ) {
       $shortcode_atts = shortcode_atts(
         array(
           'ids' => '',
+          'columns' => '3',
           'thumb-max-width' => 331,
-          'full-max-width' => 992,
+          //'full-max-width' => 992,
         ),
         $atts
       );
+
+      $stylewidth = elit_stylewidth( $shortcode_atts['columns'] );
 
       $markup = '<div class="gallery">';
       // Masonry wants a blank first item
@@ -62,7 +65,8 @@ function elit_story_gallery_shortcodes_init( ) {
         $html = elit_figure_markup( $thumb, 
                                     $full_size, 
                                     $srcset, 
-                                    $content->post_excerpt );
+                                    $content->post_excerpt,
+                                    $stylewidth );
 
         $markup .= $html;
       }
@@ -74,6 +78,16 @@ function elit_story_gallery_shortcodes_init( ) {
 
     add_shortcode( 'story-gallery', 'elit_story_gallery_shortcodes' );
 
+    /**
+     * @param string $columns The number of columns
+     * @param string          A style rule for for width
+     */
+    function elit_stylewidth( $columns ) {
+
+      $width = round( ( 100 / (int) $columns ), 1 ) - .1;
+
+      return sprintf( 'width: %f%s', $width, '%' );
+    }
 
     /**
      * Enqueue scripts and stylesheets
@@ -110,11 +124,16 @@ function elit_story_gallery_shortcodes_init( ) {
     /**
      * Generate HTML for each figure
      *
-     * @param string $thumb_url URL for the thumb image to display
-     * @param string $full_url  URL for the full-size image
+     * @param array $thumb       For small image, the array returned from 
+                                 wp_get_attachment_image_src()
+     * @param array $full_size   For full image, the array returned from 
+                                 wp_get_attachment_image_src()
+     * @param string $srcset     The srcset attribute
+     * @param string $caption    The caption to display
+     * @param string $stylewidth A fraction expressed as words, e.g., 'one-third'
      * @return string Markup for the figure
      */
-    function elit_figure_markup( $thumb, $full_size, $srcset, $caption ) {
+    function elit_figure_markup( $thumb, $full_size, $srcset, $caption, $stylewidth ) {
 
       $thumb_url = $thumb[0];
       $thumb_width = $thumb[1];
@@ -128,13 +147,12 @@ function elit_story_gallery_shortcodes_init( ) {
       //$width = $dimensions['width'];
       //$height = $dimensions['height'];
 
-      $html  = '<figure class="gallery__item">';
+      $html  = '<figure class="gallery__item" style="' . $stylewidth . ';">';
       $html .= '<a href="' . esc_url( $full_size_url ) . '"'; 
       $html .= ' data-width="' . $full_size_width .'"';
       $html .= ' data-height="' . $full_size_height . '"';
       $html .= ' data-caption="' . esc_attr( $caption ) . '">';
-      $html .= '<img alt="" data-width="' . $thumb_width . '" ';
-      $html .= 'data-height="' . $thumb_height . '" src="' . esc_url( $thumb_url ) . '" ';
+      $html .= '<img alt="" src="' . esc_url( $thumb_url ) . '" ';
       $html .= 'srcset="' . esc_attr( $srcset ) . '" />';
       $html .= "</a>";
       $html .= "</figure>";
@@ -150,7 +168,7 @@ function elit_story_gallery_shortcodes_init( ) {
      * @return false | Associative array with values for width, height
      */
     function elit_parse_dimensions( $filename ) {
-//echo '<pre>'; var_dump($filename); echo '</pre>'; die();
+
       $re = '/\d{3}x\d{3}/';
 
       $match = preg_match( $re, $filename, $matches );
@@ -321,11 +339,6 @@ EOF;
 
       return $widest_name;
     }
-
-
-
-
-
   }
 }
 add_filter( 'the_content', 'elit_add_pswp_element', 10, 1 );

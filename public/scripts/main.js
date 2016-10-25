@@ -139,7 +139,7 @@
 
     $gallery.masonry({
       itemSelector: '.gallery__item',
-      columnWidth: '.gallery__sizer',
+      //columnWidth: '.gallery__sizer',
       percentPosition: true,
     });
 
