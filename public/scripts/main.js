@@ -85,7 +85,16 @@
           index: $index,
           bgOpacity: 0.9,
           showHideOpacity: true,
+          fullscreenEl: false,
+          zoomEl: false,
+          shareEl: false,
+          counterEl: false,
+          barsSize: {
+            top: 44,
+            bottom: 0
+          }
         };
+      
   
         var gallery = new PhotoSwipe($pswp, PhotoSwipeUI_Default, items, options );
 
