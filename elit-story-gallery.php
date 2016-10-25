@@ -15,10 +15,6 @@ if (!defined('WPINC')) {
   die;
 }
 
-function elit_add_body_class ( $classes ) {
-  $classes[] = 'hiya';
-  return $classes;
-}
 function elit_story_gallery_shortcodes_init( ) {
 
   if ( !shortcode_exists( 'story-gallery' ) ) {
@@ -40,7 +36,9 @@ function elit_story_gallery_shortcodes_init( ) {
 
       $stylewidth = elit_stylewidth( $shortcode_atts['columns'] );
 
-      $markup = '<div class="gallery">';
+      $markup  = elit_add_pswp_element();
+
+      $markup .= '<div class="gallery">';
       // Masonry wants a blank first item
       $markup .= '<figure class="gallery__sizer"></figure>'; 
 
@@ -341,5 +339,5 @@ EOF;
     }
   }
 }
-add_filter( 'the_content', 'elit_add_pswp_element', 10, 1 );
+//add_filter( 'the_content', 'elit_add_pswp_element', 10, 1 );
 add_action('init' , 'elit_story_gallery_shortcodes_init' );
