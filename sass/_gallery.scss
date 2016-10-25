@@ -7,7 +7,18 @@
   &__item {
     // < 33.3333% for seamlessness;
     // see http://metafizzy.co/blog/beyonce-seamless-fluid-image-masonry/
-    /*width: 33.2%;*/
+
+    @media only screen
+      and (max-width: 480px) {
+      width: 49.9% !important
+    }
+
+//    @media only screen 
+//      and (min-width: 481px)
+//      and (max-width: 570px) {
+//      width: 33.2% !important;
+//    }
+
   }
 
   &__item {

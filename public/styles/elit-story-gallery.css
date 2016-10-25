@@ -627,8 +627,9 @@ a.pswp__share--download:hover {
     content: "";
     display: table;
     clear: both; }
-  .gallery__sizer, .gallery__item {
-    /*width: 33.2%;*/ }
+  @media only screen and (max-width: 480px) {
+    .gallery__sizer, .gallery__item {
+      width: 49.9% !important; } }
   .gallery__item {
     float: left; }
     .gallery__item img {
