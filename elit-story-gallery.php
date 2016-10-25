@@ -152,7 +152,7 @@ function elit_story_gallery_shortcodes_init( ) {
       $html .= ' data-width="' . $full_size_width .'"';
       $html .= ' data-height="' . $full_size_height . '"';
       $html .= ' data-caption="' . esc_attr( $caption ) . '">';
-      $html .= '<img alt="" src="' . esc_url( $thumb_url ) . '" ';
+      $html .= '<img alt="" src="' . esc_url( $thumb_url ) . '" style="max-width: none;"';
       $html .= 'srcset="' . esc_attr( $srcset ) . '" />';
       $html .= "</a>";
       $html .= "</figure>";
