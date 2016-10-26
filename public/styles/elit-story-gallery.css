@@ -658,14 +658,22 @@ a.pswp__share--download:hover {
   background: none; }
 
 .gallery {
-  padding-top: 1em;
-  margin-bottom: 2em;
+  padding-top: 1rem;
+  margin-bottom: 2rem;
   /*max-width: 992px;*/
   /*margin: 0 auto;*/ }
   .gallery:after {
     content: "";
     display: table;
     clear: both; }
+  .gallery__title {
+    margin-bottom: 3rem;
+    margin-top: .5rem;
+    padding-top: 1rem;
+    font-weight: 200;
+    font-size: 2rem;
+    line-height: 1.25;
+    border-top: 1px solid #ddd; }
   @media only screen and (max-width: 480px) {
     .gallery__sizer, .gallery__item {
       width: 49.9% !important; } }
