@@ -3,7 +3,7 @@
 Plugin Name: Elit Story Gallery
 Plugin URI:  
 Description: Lightboxed, responsive, tiled image gallery
-Version:     0.4.0
+Version:     0.5.0
 Author: Patrick Sinco
 Author URI: 
 License: GPL2
