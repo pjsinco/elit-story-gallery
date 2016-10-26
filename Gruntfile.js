@@ -64,6 +64,21 @@ module.exports = function(grunt) {
       }
     },
 
+    autoprefixer: {
+      css: {
+        src: 'public/styles/<%= pkg.name %>.css',
+        options: {
+          browsers: [
+            '> 1%',
+            'last 2 versions',
+            'Firefox ESR',
+            'iOS >= 7',
+            'ie >= 10'
+          ],
+        },
+      },
+    },
+
     watch: {
       scripts: {
         files: ['vendor/scripts/**/*.js'],
@@ -71,7 +86,7 @@ module.exports = function(grunt) {
       },
       sass: {
         files: ['sass/**/*.scss'],
-        tasks: ['sass:dev', 'notify:sass'],
+        tasks: ['sass:dev', 'notify:sass', 'autoprefixer:css' ],
       },
     },
 
@@ -82,6 +97,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-notify');
+  grunt.loadNpmTasks("grunt-autoprefixer");
 
   grunt.registerTask('scripts-dev', ['concat']);
   grunt.registerTask('scripts-dist', ['concat', 'uglify']);
