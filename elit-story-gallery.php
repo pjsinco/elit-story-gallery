@@ -28,6 +28,7 @@ function elit_story_gallery_shortcodes_init( ) {
         array(
           'ids' => '',
           'columns' => '3',
+          'title' => '',
           'thumb-max-width' => 331,
           //'full-max-width' => 992,
         ),
@@ -37,8 +38,16 @@ function elit_story_gallery_shortcodes_init( ) {
       $stylewidth = elit_stylewidth( $shortcode_atts['columns'] );
 
       $markup  = elit_add_pswp_element();
+      
+      if ( !empty( $shortcode_atts['title'] ) ) {
+        $markup .= '<h5 class="gallery__title">' . wptexturize( $shortcode_atts['title'] );
+        $markup .= '</h5>';
+      } else {
+      }
 
-      $markup .= '<div class="gallery">';
+
+      $markup .= '<div class="gallery">'; 
+
       // Masonry wants a blank first item
       $markup .= '<figure class="gallery__sizer"></figure>'; 
 
@@ -180,7 +189,7 @@ function elit_story_gallery_shortcodes_init( ) {
       return false;
     }
 
-    function elit_add_pswp_element( $content ) {
+    function elit_add_pswp_element() {
 
       $markup = <<<EOF
       <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
@@ -226,7 +235,7 @@ function elit_story_gallery_shortcodes_init( ) {
       </div> <!-- .pswp -->
 EOF;
 
-      return $content . $markup;
+      return $markup;
     }
 
     /**
